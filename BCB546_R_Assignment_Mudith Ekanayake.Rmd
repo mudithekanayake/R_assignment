@@ -1,16 +1,13 @@
 ---
-title: "R_assignment"
+title: "BCB546 - R Assignment"
 author: "Mudith Ekanayake"
-date: "3/18/2021"
+date: "3/19/2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-
-# BCB546 - UNIX Assignment - Mudith Ekanayake
 
 ## Part I
 
@@ -81,10 +78,11 @@ sapply(fang_data, class)
 
 By inspecting this file I learned that:
 
-File size: 11051939 bytes
-Dimension of the dataframe: 2782 x 986
-Number of rows: 2782
-Number of columns: 986
+* File size: 11051939 bytes
+* Dimension of the dataframe: 2782 x 986
+* Number of rows: 2782
+* Number of columns: 986
+
 
 ### Attributes of snp_position.txt
 
@@ -146,55 +144,61 @@ sapply(snp_data, class)
 
 By inspecting this file I learned that:
 
-File size: 82763 bytes
-Dimension of the dataframe: 983 x 15
-Number of rows: 983
-Number of columns: 15
+* File size: 82763 bytes
+* Dimension of the dataframe: 983 x 15
+* Number of rows: 983
+* Number of columns: 15
+
 
 ## Data Processing
 
+snp_data data frame was formatted such that the first column is "SNP_ID", the second column is "Chromosome", the third column is "Position".
 ```{r}
 snp_data <- snp_data[c(1,3,4,2,5:15)]
 ```
-snp_data data frame was formatted such that the first column is "SNP_ID", the second column is "Chromosome", the third column is "Position".
+
 
 ### For maize
 
+Filtered out maize data (Group = ZMMIL, ZMMLR, and ZMMMR) and "maize" data frame created.
 ```{r}
 maize <- fang_data %>% filter(Group=="ZMMIL"|Group=="ZMMLR"|Group=="ZMMMR")
 ```
 
+Genotype data ("maize") were transposed using t() function so that the columns become rows. "stringsAsFactors = FALSE" prevents converting character columns to factors.
 ```{r}
 maize <- as.data.frame(t(maize), stringsAsFactors = FALSE)
 ```
 
+rownames() function is the function that uses to get and set row names for data frames.
 ```{r}
 SNP_ID <- rownames(maize)
 rownames(maize) <- NULL
 ```
 
+cbind() function stands for column binding and it is normally used to combine vectors, matrices or data frames by columns. It splits matrix columns in data frame arguments and "stringsAsFactors = FALSE" prevents converting character columns to factors.
 ```{r}
 maize <- cbind(SNP_ID, maize, stringsAsFactors = FALSE)
 ```
-cbind r function stands for column binding and it used to combine vectors matrices or data frames by columns. It splits matrix columns in data frame arguments and "stringsAsFactors = FALSE" prevents converting character columns to factors.
 
+First row was changed into SNP_ID and column 1, column 2, and column 3 were removed.
 ```{r}
 names(maize) <-  c("SNP_ID",maize[1,-1])
 maize <- maize[-c(1,2,3), ]
 ```
 
-
+Transposed maize genotype data and snp data were merged by SNP_ID.
 ```{r}
 merged_maize <- merge(snp_data, maize, by="SNP_ID")
 ```
 
-
+A directory was Created for storing generated files for maize.
 ```{r}
 dir.create("maize_data")
 ```
-Create directory for storing generated files for maize
 
-
+mutate() function spcially can add new variables while preserving existing ones. arrange() function arranges rows by variables.
+Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data.
 ```{r}
 for(i in c(1:10)){
   maize_data <- merged_maize %>% filter(Chromosome==i) %>% mutate(Position_new=as.numeric(Position)) %>% arrange(Position_new)
@@ -203,53 +207,58 @@ for(i in c(1:10)){
 }
 ```
 
-
+Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data.
 ```{r}
 for(i in c(1:10)){
   maize_data <- merged_maize %>% filter(Chromosome==i)%>% mutate(Position_new=as.numeric(Position)) %>% arrange(-Position_new)
   maize_data$Position_new <- NULL
-  maize_data[maize_data == "?/?"]<-"-/-"
+  maize_data[maize_data == "?/?"] <- "-/-"
   write.csv(maize_data, paste0("maize_chr_dsc",i,".csv"), row.names = FALSE)
 }
 ```
 
+
 ### For Teosinte
 
+Filtered out teosinte data (Group = ZMPBA, ZMPIL, and ZMPJA) and "teosinte" data frame created.
 ```{r}
 teosinte <- fang_data %>% filter(Group=="ZMPJA"|Group=="ZMPIL"|Group=="ZMPBA")
 ```
 
+Genotype data ("teosinte") were transposed using t() function so that the columns become rows. "stringsAsFactors = FALSE" prevents converting character columns to factors.
 ```{r}
 teosinte <- as.data.frame(t(teosinte), stringsAsFactors = FALSE)
 ```
 
+rownames() function is the function that uses to get and set row names for data frames.
 ```{r}
 SNP_ID <- rownames(teosinte)
 rownames(teosinte) <- NULL
 ```
 
+cbind() function stands for column binding and it is normally used to combine vectors, matrices or data frames by columns. It splits matrix columns in data frame arguments and "stringsAsFactors = FALSE" prevents converting character columns to factors.
 ```{r}
 teosinte <- cbind(SNP_ID, teosinte, stringsAsFactors = FALSE)
 ```
-cbind r function stands for column binding and it used to combine vectors matrices or data frames by columns. It splits matrix columns in data frame arguments and "stringsAsFactors = FALSE" prevents converting character columns to factors.
 
+First row was changed into SNP_ID and column 1, column 2, and column 3 were removed.
 ```{r}
 names(teosinte) <-  c("SNP_ID", teosinte[1,-1])
 teosinte <- teosinte[-c(1,2,3), ]
 ```
 
-
+Transposed teosinte genotype data and snp data were merged by SNP_ID.
 ```{r}
 merged_teosinte <- merge(snp_data, teosinte, by="SNP_ID")
 ```
 
-
+A directory was Created for storing generated files for teosinte.
 ```{r}
 dir.create("teosinte_data")
 ```
-Create directory for storing generated files for teosinte
 
-
+mutate() function spcially can add new variables while preserving existing ones. arrange() function arranges rows by variables.
+Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data.
 ```{r}
 for(i in c(1:10)){
   teosinte_data <- merged_teosinte %>% filter(Chromosome==i) %>% mutate(Position_new=as.numeric(Position)) %>% arrange(Position_new)
@@ -258,7 +267,7 @@ for(i in c(1:10)){
 }
 ```
 
-
+Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data.
 ```{r}
 for(i in c(1:10)){
   teosinte_data <- merged_teosinte %>% filter(Chromosome==i)%>% mutate(Position_new=as.numeric(Position)) %>% arrange(-Position_new)
@@ -267,6 +276,8 @@ for(i in c(1:10)){
   write.csv(teosinte_data, paste0("teosinte_chr_dsc",i,".csv"), row.names = FALSE)
 }
 ```
+
+
 
 ## Part II
 
@@ -279,14 +290,15 @@ is.numeric function checks whether its argument is numerical or not and is.na fu
 snp_data_n <- snp_data[!is.na(as.numeric(snp_data$Chromosome)),]
 ```
 
-geom_bar() function was used to plot the bar chart. scale_x_discrete() function was used to set the values for discrete x aesthetic. labs() function was used to label the x and y axis of the graph. Bar chart was colored according to the "Chromosome".
+geom_bar() function was used to plot the bar chart. scale_x_discrete() function was used to set the values for discrete x aesthetic. labs() function was used to label the x and y axes of the graph. Bar chart was colored according to the "Chromosome". ggtitle() function was used to give a title to the graph.
 ```{r}
-ggplot(data = snp_data_n) + geom_bar(mapping = aes(x = Chromosome, fill = Chromosome)) + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y = "Number of SNPs")
+ggplot(data = snp_data_n) + geom_bar(mapping = aes(x = Chromosome, fill = Chromosome)) + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y = "Number of SNPs") + ggtitle("Number of SNPs in the dataset Vs Chromosome")
 ```
+
 
 ### Plotting the distribution of SNPs on chromosomes.
 
-reshaping the original data using the pivot_longer() function in the tidyr package.Sample_ID, JG_OTU and Group columns were selected. "names_to" specifies the name of the column as "SNP_ID" and the column was created from the data stored in the column names of "fang_data" data frame. "values_to" specifies the name of the column as "NT" and the column was created from the data stored in cell values.
+Reshaping the original data using the pivot_longer() function in the tidyr package. Sample_ID, JG_OTU and Group columns were selected. "names_to" specifies the name of the column as "SNP_ID" and the column was created from the data stored in the column names of "fang_data" data frame. "values_to" specifies the name of the column as "NT" and the column was created from the data stored in cell values.
 ```{r}
 fang_pivot <- fang_data %>% pivot_longer(!c(Sample_ID, JG_OTU, Group), names_to="SNP_ID", values_to= "NT")
 ```
@@ -300,10 +312,11 @@ merged_fang_Pivot <- merge(fang_pivot, snp_data, by="SNP_ID")
 merged_fang_Pivot_n <- merged_fang_Pivot[!is.na(as.numeric(merged_fang_Pivot$Chromosome)),]
 ```
 
-Bar chart was colored and shaded according to the "Group".
+Bar chart was colored and shaded according to the "Group". x and y axes were labeled as Chromosome and Distribition of SNPs.
 ```{r}
-ggplot(data = merged_fang_Pivot_n) + geom_bar(mapping = aes(as.numeric(Chromosome), fill=Group)) + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y="Distribution of SNPs")
+ggplot(data = merged_fang_Pivot_n) + geom_bar(mapping = aes(as.numeric(Chromosome), fill=Group)) + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y="Distribution of SNPs") + ggtitle("Distribution of SNPs on Chromosomes")
 ```
+
 
 ## Missing data and amount of heterozygosity
 
@@ -322,17 +335,37 @@ Check for the homozygous sites and replace the sites with "Homozygous" in the "h
 merged_fang_Pivot$homo_or_hetero[merged_fang_Pivot$NT %in% c("A/A", "C/C", "G/G", "T/T")] <- "Homozygous"
 ```
 
-Proportion of homozygous and heterozygous sites as well as missing data in each sample was plotted using ggplot and height of the individual bars were normalized using ggplot's "position adjustment" option. Graph was labeled using labs() function.
+Proportion of homozygous and heterozygous sites as well as missing data in each sample was plotted using ggplot and height of the individual bars were normalized using ggplot's "position adjustment" option. Graph was labeled and titled using labs() and ggtitle() function.
 ```{r}
-ggplot(data = merged_fang_Pivot) + geom_bar(mapping=aes(x = Sample_ID, fill = homo_or_hetero), position = "fill") + labs(x = "Sample_ID", y="Proportion")
+ggplot(data = merged_fang_Pivot) + geom_bar(mapping=aes(x = Sample_ID, fill = homo_or_hetero), position = "fill") + labs(x = "Sample_ID", y="Proportion") + ggtitle("Proportion of Homozygous, Heterozygous Sites and missing data in samples")
 ```
+
 
 Proportion of homozygous and heterozygous sites as well as missing data in each Group was plotted using ggplot and height of the individual bars were normalized using ggplot's "position adjustment" option. Graph was labeled using labs() function.
 ```{r}
-ggplot(data = merged_fang_Pivot) + geom_bar(mapping = aes(x = Group, fill = homo_or_hetero), position = "fill") + labs(x = "Group", y="Proportion") + ggtitle("")
+ggplot(data = merged_fang_Pivot) + geom_bar(mapping = aes(x = Group, fill = homo_or_hetero), position = "fill") + labs(x = "Group", y="Proportion") + ggtitle("Proportion of Homozygous, Heterozygous Sites and missing data in Groups")
 ```
 
 
+
+## My own visualization
+
+New data frame was created selecting only the Chromosome column and gene column.
 ```{r}
-ggplot(data = merged_fang_Pivot) + geom_bar(mapping = aes(x = Sample_ID, fill = gene), position = "fill") + labs(x = "Gene", y="Proportion")
+gene_distribution <- merged_fang_Pivot %>% select(Chromosome, gene)
+```
+
+Duplicate rows which match same gene for same chromosome were removed in order to make the data frame simple for counting genes.
+```{r}
+deduped.data <- unique( gene_distribution[ , 1:2 ] )
+```
+
+Genes per chromosome were counted using count() function.
+```{r}
+gene_count <- count(deduped.data, Chromosome)
+```
+
+Bar plot was generated using ggplot(). "stat='identity'" was included since y values were calculated in the previous step and they were provided separately in the aes() function.
+```{r}
+ggplot(gene_count, aes(x = Chromosome, y = n, fill = Chromosome)) + geom_bar(stat='identity') + labs(x = "Chromosome", y="Number of Genes") + ggtitle("Distribution of Genes on Chromosomes")
 ```
