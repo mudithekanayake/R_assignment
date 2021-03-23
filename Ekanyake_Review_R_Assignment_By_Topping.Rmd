@@ -1,0 +1,24 @@
+---
+title: "Ekanayake_Review_R_Assignment_By_Topping"
+author: "Nick Topping"
+date: "3/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Review for Mudith Ekanyake
+
+I really like your explanations before each chunk of code, it makes the markdown file easy to follow.
+
+When showing functions to use in the markdown file, I would hide the output for some functions. The first example would be the function `str(fang_data)` in your project. It takes a long time to scroll through that much output. You can hide it by {r eval=FALSE}.
+
+You can hide any warnings that pop up with the code {r warning=FALSE} in the code chunk.
+
+We were told to avoid for loops in our code but I know that your for loop works the way intended to get the desired files. If you wanted to change it, they are looking for you to use the `lapply()` function.
+
+Your own data visualization is done very nicely and achieves what you wanted (plotting the number of genes on each chromosome included in the dataset).
+
+Your code looks really well done to me in both formatting and how well written the code is. Nice job!
