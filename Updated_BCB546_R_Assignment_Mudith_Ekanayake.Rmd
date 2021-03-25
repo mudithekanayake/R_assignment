@@ -2,7 +2,9 @@
 title: "BCB546 - R Assignment"
 author: "Mudith Ekanayake"
 date: "3/19/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Attributes of fang_et_al_genotypes.txt
 
-```{r}
+```{r warning=FALSE}
 library(tidyverse)
 library(tidyr)
 ```
@@ -36,7 +38,7 @@ file.info("fang_et_al_genotypes.txt", extra_cols = TRUE)
 ```
 
 To compactly display the internal structure of the R object
-```{r}
+```{r eval=FALSE}
 str(fang_data)
 ```
 
@@ -62,17 +64,17 @@ ncol(fang_data)
 ```
 
 To get the structure of the data frame by previewing data in the columns
-```{r}
+```{r eval=FALSE}
 str(fang_data)
 ```
 
 To view the column names
-```{r}
+```{r eval=FALSE}
 names(fang_data)
 ```
 
 To see the class of all the columns
-```{r}
+```{r eval=FALSE}
 sapply(fang_data, class)
 ```
 
@@ -199,7 +201,7 @@ dir.create("maize_data")
 
 mutate() function spcially can add new variables while preserving existing ones. arrange() function arranges rows by variables.
 Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data.
-```{r}
+```{r warning=FALSE}
 for(i in c(1:10)){
   maize_data <- merged_maize %>% filter(Chromosome==i) %>% mutate(Position_new=as.numeric(Position)) %>% arrange(Position_new)
   maize_data$Position_new <- NULL
@@ -208,7 +210,7 @@ for(i in c(1:10)){
 ```
 
 Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data.
-```{r}
+```{r warning=FALSE}
 for(i in c(1:10)){
   maize_data <- merged_maize %>% filter(Chromosome==i)%>% mutate(Position_new=as.numeric(Position)) %>% arrange(-Position_new)
   maize_data$Position_new <- NULL
@@ -259,7 +261,7 @@ dir.create("teosinte_data")
 
 mutate() function spcially can add new variables while preserving existing ones. arrange() function arranges rows by variables.
 Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on increasing position values and with missing data.
-```{r}
+```{r warning=FALSE}
 for(i in c(1:10)){
   teosinte_data <- merged_teosinte %>% filter(Chromosome==i) %>% mutate(Position_new=as.numeric(Position)) %>% arrange(Position_new)
   teosinte_data$Position_new <- NULL
@@ -268,7 +270,7 @@ for(i in c(1:10)){
 ```
 
 Data were sorted based on position and were written to the ouputs as csv files. 10 files were generated (1 for each chromosome) with SNPs ordered based on decreasing position values and with missing data.
-```{r}
+```{r warning=FALSE}
 for(i in c(1:10)){
   teosinte_data <- merged_teosinte %>% filter(Chromosome==i)%>% mutate(Position_new=as.numeric(Position)) %>% arrange(-Position_new)
   teosinte_data$Position_new <- NULL
@@ -286,12 +288,12 @@ for(i in c(1:10)){
 ### Plotting the total number of SNPs in the dataset on each chromosome.
 
 is.numeric function checks whether its argument is numerical or not and is.na function checks whether there are missing values. "!" symbol reverses the function of is.na.
-```{r}
+```{r warning=FALSE}
 snp_data_n <- snp_data[!is.na(as.numeric(snp_data$Chromosome)),]
 ```
 
 geom_bar() function was used to plot the bar chart. scale_x_discrete() function was used to set the values for discrete x aesthetic. labs() function was used to label the x and y axes of the graph. Bar chart was colored according to the "Chromosome". ggtitle() function was used to give a title to the graph.
-```{r}
+```{r warning=FALSE}
 ggplot(data = snp_data_n) + geom_bar(mapping = aes(as.numeric(Chromosome)), color = "maroon", fill = "maroon") + ggtitle("Number of SNPs in the dataset Vs Chromosome") + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y = "Number of SNPs")
 ```
 
@@ -308,12 +310,12 @@ fang_pivot data frame was merged by SNP_ID.
 merged_fang_Pivot <- merge(fang_pivot, snp_data, by="SNP_ID")
 ```
 
-```{r}
+```{r warning=FALSE}
 merged_fang_Pivot_n <- merged_fang_Pivot[!is.na(as.numeric(merged_fang_Pivot$Chromosome)),]
 ```
 
 Bar chart was colored and shaded according to the "Group". x and y axes were labeled as Chromosome and Distribition of SNPs.
-```{r}
+```{r warning=FALSE}
 ggplot(data = merged_fang_Pivot_n) + geom_bar(mapping = aes(as.numeric(Chromosome), fill=Group)) + ggtitle("Distribution of SNPs on Chromosomes") + scale_x_discrete(limit=c(1:10)) + labs(x = "Chromosome", y="Distribution of SNPs")
 ```
 
